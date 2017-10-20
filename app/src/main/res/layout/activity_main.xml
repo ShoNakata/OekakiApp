@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/myId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="自分のIDを入力"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/btn1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="id取得"
+        android:textSize="20dp"
+        android:onClick="onClick"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn2"
+        android:text="一覧取得"
+        android:onClick="onClick"/>
+
+    <EditText
+        android:id="@+id/friendId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="追加したいIDを入力"
+        android:gravity="center"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/btn3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="フレンド追加"
+        android:onClick="onClick"/>
+
+
+    <EditText
+        android:hint="削除したいID入力"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/removeId"
+        android:gravity="center"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:text="削除"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn4"
+        android:onClick="onClick"/>
+
+
+</LinearLayout>
