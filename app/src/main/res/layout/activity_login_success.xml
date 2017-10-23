@@ -36,4 +36,13 @@
         android:layout_marginTop="34dp"
         android:text="プロジェクト作成" />
 
+    <Button
+        android:id="@+id/oekakiBotton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/logout_button"
+        android:layout_alignEnd="@+id/logout_button"
+        android:layout_marginBottom="41dp"
+        android:text="お絵かき" />
+
 </RelativeLayout>

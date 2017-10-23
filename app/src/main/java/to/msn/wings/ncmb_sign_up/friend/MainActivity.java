@@ -4,7 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.nifty.cloud.mb.core.DoneCallback;
@@ -19,7 +23,10 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
+import to.msn.wings.ncmb_sign_up.CustomImageView;
+import to.msn.wings.ncmb_sign_up.DrawSurfaceView;
 import to.msn.wings.ncmb_sign_up.R;
+import to.msn.wings.ncmb_sign_up.api.ApiDrawingConfig;
 
 /**
  * Created by 4163103 on 2017/10/20.
@@ -38,16 +45,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NCMB.initialize(this.getApplicationContext(),"b18d561e7aa78c63abe4cd7a0bab2693b84cb975fe627e805281aaf9a2cfd82b",
-                "80c9d743a613b53e9c09f104371d32cfdf7d79449ca1ed2b8b2e89dd31de5f72");
-        myId = (EditText) findViewById(R.id.myId);//オブジェクトID
+        NCMB.initialize(this.getApplicationContext(), ApiDrawingConfig.API_APP_KEY, ApiDrawingConfig.API_CLIENT_KEY); myId = (EditText) findViewById(R.id.myId);//オブジェクトID
         friendId = (EditText) findViewById(R.id.friendId);//追加したいオブジェクトID
         remoId = (EditText) findViewById(R.id.removeId);//削除したいオブジェクトID
         friendList1 = new ArrayList();
+
     }
 
-    public void onClick(View v){
-        switch (v.getId()){
+    public void onClick(View v) {
+        switch (v.getId()) {
             //ID入力してfriendを取得
             case R.id.btn1:
                 final NCMBObject friend1 = new NCMBObject("UserClass");
@@ -76,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
             //画面遷移して一覧表示
             case R.id.btn2:
-                Intent intent = new Intent(MainActivity.this,ListActivity.class);
-                intent.putStringArrayListExtra("key",friendList1);
+                Intent intent = new Intent(MainActivity.this, ListActivity.class);
+                intent.putStringArrayListExtra("key", friendList1);
                 startActivity(intent);
                 break;
 
@@ -88,24 +94,24 @@ public class MainActivity extends AppCompatActivity {
                 friend2.setObjectId(text);
                 String friendid = friendId.getText().toString();
                 JSONArray jsonArray = new JSONArray();
-                for (String friendId : friendList1){
+                for (String friendId : friendList1) {
                     jsonArray.put(friendId);
                 }
                 int id = friendList1.indexOf(friendid);
 
                 if (id != -1) {
-                    Toast.makeText(MainActivity.this,"既に登録されています。",Toast.LENGTH_SHORT).show();
-                }else{
+                    Toast.makeText(MainActivity.this, "既に登録されています。", Toast.LENGTH_SHORT).show();
+                } else {
                     jsonArray.put(friendid);
                     //TODO
-                    friend2.put("friend",jsonArray);
+                    friend2.put("friend", jsonArray);
                     friend2.saveInBackground(new DoneCallback() {
                         @Override
                         public void done(NCMBException e) {
-                            if (e != null){
-                                Toast.makeText(MainActivity.this,"失敗",Toast.LENGTH_SHORT).show();
-                            }else{
-                                Toast.makeText(MainActivity.this,"成功",Toast.LENGTH_SHORT).show();
+                            if (e != null) {
+                                Toast.makeText(MainActivity.this, "失敗", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -121,28 +127,29 @@ public class MainActivity extends AppCompatActivity {
                 String refriend = remoId.getText().toString();
 
                 JSONArray data = new JSONArray();
-                for (String friendId : friendList1){
+                for (String friendId : friendList1) {
                     data.put(friendId);
                 }
 
                 int id1 = friendList1.indexOf(refriend);
-                if (id1 != -1){
+                if (id1 != -1) {
                     friendList1.remove(id1);
-                    friend3.put("friend",friendList1);
+                    friend3.put("friend", friendList1);
                     friend3.saveInBackground(new DoneCallback() {
                         @Override
                         public void done(NCMBException e) {
-                            if (e != null){
-                                Toast.makeText(MainActivity.this,"失敗",Toast.LENGTH_SHORT).show();
-                            }else{
-                                Toast.makeText(MainActivity.this,"成功",Toast.LENGTH_SHORT).show();
+                            if (e != null) {
+                                Toast.makeText(MainActivity.this, "失敗", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-                }else{
-                    Toast.makeText(MainActivity.this,"入力されたIDは存在しません。",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "入力されたIDは存在しません。", Toast.LENGTH_SHORT).show();
                 }
                 break;
+
         }
     }
 }

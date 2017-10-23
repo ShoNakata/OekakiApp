@@ -74,6 +74,17 @@ public class Login_success_Activity extends AppCompatActivity {
 
 
 
+        //おえかきボタンpush
+        Button oekaki_btn = (Button)findViewById(R.id.oekakiBotton);
+        oekaki_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getApplication(), OekakiActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
 
 

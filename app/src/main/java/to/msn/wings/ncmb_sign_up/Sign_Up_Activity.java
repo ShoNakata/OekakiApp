@@ -61,6 +61,8 @@ public class Sign_Up_Activity extends AppCompatActivity {
 
 
 
+
+
         //-----------新規ログイン登録ボタンpush-----------------
         Button btn = (Button)findViewById(button_sign);
         btn.setOnClickListener(new View.OnClickListener() {
