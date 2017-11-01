@@ -16,7 +16,6 @@ import to.msn.wings.ncmb_sign_up.api.ApiDrawingConfig;
 public class OekakiActivity extends AppCompatActivity implements View.OnClickListener {
 
     DrawSurfaceView mDrawSurfaceView;
-    CustomImageView mCustomImageView;
     static FrameLayout linearLayout;
 
 
@@ -29,14 +28,8 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
 
         mDrawSurfaceView = new DrawSurfaceView(this);
 
-
-        mCustomImageView = new CustomImageView(this);
-        mCustomImageView.setImageResource(R.drawable.tech_pjin_icon);
-
-
         linearLayout = (FrameLayout) findViewById(R.id.frameLayout);
 
-        linearLayout.addView(mCustomImageView);
         linearLayout.addView(mDrawSurfaceView);
 
 
@@ -118,11 +111,11 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
 //                mDrawSurfaceView.redo();
 //                break;
             case R.id.draw:
-                mCustomImageView.setTranslationZ(0);
+                //mCustomImageView.setTranslationZ(0);
 
                 break;
             case R.id.pinch:
-                mCustomImageView.setTranslationZ(10);
+               // mCustomImageView.setTranslationZ(10);
                 break;
         }
     }

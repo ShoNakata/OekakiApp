@@ -4,11 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.nifty.cloud.mb.core.DoneCallback;
@@ -23,8 +19,6 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
-import to.msn.wings.ncmb_sign_up.CustomImageView;
-import to.msn.wings.ncmb_sign_up.DrawSurfaceView;
 import to.msn.wings.ncmb_sign_up.R;
 import to.msn.wings.ncmb_sign_up.api.ApiDrawingConfig;
 

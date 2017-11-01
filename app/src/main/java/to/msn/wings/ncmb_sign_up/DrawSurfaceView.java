@@ -1,9 +1,12 @@
 package to.msn.wings.ncmb_sign_up;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
@@ -12,6 +15,7 @@ import android.graphics.PorterDuffXfermode;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -29,41 +33,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
+public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callback{
+    Resources res = this.getContext().getResources();
+    Bitmap bmp = BitmapFactory.decodeResource(res, R.drawable.tatenaga);
+    Bitmap reBmp;
 
     final float VIEW_WIDTH = 400;
     final float VIEW_HEIGHT = 600;
-
     // 定数
     private static final String TAG = "DrawSurfaceView";
     public static final int TOOL_ERASER = 0; //消しゴム
     public static final int TOOL_PEN = 1; //ペン
-
     public static final String DEF_FONT_COLOR = "#000000";
     public static final float DEF_FONT_SIZE = 20.0f;
-
     private SurfaceHolder mHolder;
     private Paint mPaint;
     private Path mPath;
-    private Bitmap mLastDrawBitmap;
+    private Path path;
+    //private Bitmap mLastDrawBitmap;
     private Canvas mCanvas;
-    private Canvas mLastDrawCanvas;
-
     private Handler mHandler;
-
     // 送信用描画データ
     DrawData mDrawData = null;
-
     float scale;
     //描画の重なり
     private Context parent;
-
     private Utils mUtils;
-
     // ペンの初期設定
     private String mFontColor = DEF_FONT_COLOR;
     private float mFontSize = DEF_FONT_SIZE;
     private int mTool_category = 1;// 0=消しゴム、1=ペン
+
+    private float mScale = 0.5f; // 描画する倍率
+    private ScaleGestureDetector mScaleDetector;
 
     /**
      * コンストラクター
@@ -76,70 +78,105 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mUtils = new Utils(parent);
         init();
         getDrawing();
+//        mScaleDetector = new ScaleGestureDetector(context,
+//                new ScaleGestureDetector.OnScaleGestureListener() {
+//                    @Override
+//                    public boolean onScale(ScaleGestureDetector detector) {
+//                        // ピンチイン・アウト中に継続して呼び出される
+//                        // getScaleFactor()は
+//                        // 『今回の2点タッチの距離/前回の2点タッチの距離』を返す
+//                        Log.d("Pinch", "onScale factor:" +
+//                                detector.getScaleFactor());
+//
+//                        // 表示倍率の計算
+//                        mScale *= detector.getScaleFactor();
+//                        Log.e("ttttttttttttt", String.valueOf(scale+mScale));
+//                        invalidate();
+//                        return true;
+//                    }
+//
+//                    @Override
+//                    public boolean onScaleBegin(ScaleGestureDetector detector) {
+//                        Log.d("Pinch", "onScale.onScaleBegin");
+//                        return true;
+//                    }
+//
+//                    @Override
+//                    public void onScaleEnd(ScaleGestureDetector detector) {
+//                        Log.d("Pinch", "onScale.onScaleEnd");
+//                    }
+//                });
     }
-
     /**
      * 初期化処理
      */
     private void init() {
         mHolder = getHolder();
+        mPath = new Path();
+        path = new Path();
 
         // 透過します。
         setZOrderOnTop(true);
         mHolder.setFormat(PixelFormat.TRANSPARENT);
-
         // コールバックを設定します。
         mHolder.addCallback(this);
-
         // ペンを設定します。
         setToolPen();
     }
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
-
         float scaleX = getWidth() / VIEW_WIDTH;
         float scaleY = getHeight() / VIEW_HEIGHT;
         scale = scaleX > scaleY ? scaleY : scaleX;
-
-        Log.i("surfaceCreated", "scaleX:" + scaleX);
-        Log.i("surfaceCreated", "scaleY:" + scaleY);
-
         // 描画状態を保持するBitmapを生成します。
-        clearLastDrawBitmap();
+        //clearLastDrawBitmap();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
                                int height) {
+        int src_width =bmp.getWidth();
+        int src_height = bmp.getHeight();
+        float xScale = (float) width/scale / src_width;
+        float yScale = (float) height/scale / src_height;
+        if (xScale < yScale){
+            xScale = (float) width/scale / src_width;
+            yScale = (float) (src_height * xScale) / src_height;
+        }else{
+            xScale = (float) (src_width * yScale) / src_width;
+            yScale = (float) height/scale / src_height;
+        }
+        Matrix matrix = new Matrix();
+        matrix.postScale(xScale, yScale);
+        reBmp = Bitmap.createBitmap(bmp, 0, 0, src_width, src_height, matrix, true);
+        //TODO　変化があるごと画像をセット
+        // drawImage();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        mLastDrawBitmap.recycle();
     }
 
-    private void clearLastDrawBitmap() {
-        if (mLastDrawBitmap == null) {
-            mLastDrawBitmap = Bitmap.createBitmap(getWidth(), getHeight(),
-                    Bitmap.Config.ARGB_8888);
-        }
 
-        if (mLastDrawCanvas == null) {
-            mLastDrawCanvas = new Canvas(mLastDrawBitmap);
-        }
 
-        mLastDrawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+//        Log.e("---------------", String.valueOf(scale + mScale));
+//        // ロックしてキャンバスを取得します。
+//        mCanvas = mHolder.lockCanvas();
+//        //比率に応じてキャンパスサイズを指定
+//        mCanvas.scale(scale + mScale, scale + mScale);
+//        // キャンバスをクリアします。
+//        mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+//        mCanvas.drawBitmap(reBmp,0,0,null);
+//        // 前回描画したビットマップをキャンバスに描画します。
+//        mCanvas.drawBitmap(mLastDrawBitmap, 0, 0, null);
+//        // ロックを外します。
+//        mHolder.unlockCanvasAndPost(mCanvas);
+//        return mScaleDetector.onTouchEvent(event);
         float touchedX = event.getX() / scale;
         float touchedY = event.getY() / scale;
-
-        Log.i("onTouchEvent", "touxhedX:" + touchedX);
-        Log.i("onTouchEvent", "touxhedY:" + touchedY);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -148,7 +185,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 mPaint.setStrokeWidth(mFontSize);
                 mPaint.setColor(Color.parseColor(mFontColor));
 
-                mPath = new Path();
+                //mPath = new Path();
                 mPath.moveTo(touchedX, touchedY);
 
                 // 受け渡し用
@@ -165,9 +202,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             case MotionEvent.ACTION_UP:
                 mPath.lineTo(touchedX, touchedY);
                 drawLine(mPath);
-
-                mLastDrawCanvas.drawPath(mPath, mPaint);
-
                 // 描画データを送信
                 sendDrawing(mDrawData);
                 break;
@@ -179,6 +213,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mDrawData.setPath(touchedX, touchedY);
         return true;
     }
+
 
     /**
      * 描画データを送信
@@ -281,7 +316,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
 
         //パスの生成
-        Path path = new Path();
+        //path = new Path();
+
         boolean flgFirst = true;
         int pathArrayLength = pathArray.length();
         for (int i = 0; i < pathArrayLength; i++) {
@@ -298,11 +334,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 e3.printStackTrace();
             }
         }
-        if (state == 1){
-            //線の描画
-            drawLine(path);
-            mLastDrawCanvas.drawPath(path, mPaint);
-        }
+        //線の描画
+        drawLine(path);
     }
 
     /**
@@ -313,121 +346,58 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private void drawLine(Path path) {
         // ロックしてキャンバスを取得します。
         mCanvas = mHolder.lockCanvas();
+        if (mCanvas != null){
+            //------------------------------------------------
+            mCanvas.drawColor(Color.WHITE);
+            //比率に応じてキャンパスサイズを指定
+            mCanvas.scale(scale, scale);
+            //mCanvas.drawBitmap(reBmp,0,0,null);
+            // パスを描画します。
+            mCanvas.drawPath(path, mPaint);
+            //------------------------------------------------
+            // ロックを外します。
+            mHolder.unlockCanvasAndPost(mCanvas);
 
-        //比率に応じてキャンパスサイズを指定
-        mCanvas.scale(scale, scale);
-
-        // キャンバスをクリアします。
-        mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
-        // 前回描画したビットマップをキャンバスに描画します。
-        mCanvas.drawBitmap(mLastDrawBitmap, 0, 0, null);
-
-        // パスを描画します。
-        mCanvas.drawPath(path, mPaint);
-
-        // ロックを外します。
-        mHolder.unlockCanvasAndPost(mCanvas);
+        }
     }
+
+    /**
+     * 画像のセット
+     *
+     */
+//    private void drawImage() {
+//        // ロックしてキャンバスを取得します。
+//        mCanvas = mHolder.lockCanvas();
+//        //比率に応じてキャンパスサイズを指定
+//        mCanvas.scale(scale, scale);
+//        mCanvas.drawBitmap(reBmp,0,0,null);
+//        // 前回描画したビットマップをキャンバスに描画します。
+//        mCanvas.drawBitmap(mLastDrawBitmap, 0, 0, null);
+//        // ロックを外します。
+//        mHolder.unlockCanvasAndPost(mCanvas);
+//    }
 
     /**
      * リモートの描画データと同期する
      */
     public void sync() {
+        mCanvas = null;
         // ロックしてキャンバスを取得します。
         mCanvas = mHolder.lockCanvas();
-
-        //描画データを初期化
-        mLastDrawBitmap = null;
-        mLastDrawCanvas = null;
-        clearLastDrawBitmap();
-
         // キャンバスをクリアします。
-        mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
+        // init();
+        mCanvas.scale(scale, scale);
+        //mCanvas.drawBitmap(reBmp,0,0,null);
         // ロックを外します。
         mHolder.unlockCanvasAndPost(mCanvas);
-
-        //init();
         getDrawing();
     }
-
-    /**
-     * undo
-     */
-    public void undo() {
-        NCMBQuery<NCMBObject> query = new NCMBQuery<>("DrawingClass");
-        //データを昇順で取得するためのフィールドを設定
-        query.addOrderByAscending("state");
-        //状態が1
-        query.whereEqualTo("state",1);
-        //データを降順で取得するためのフィールドを設定
-
-
-        query.findInBackground(new FindCallback<NCMBObject>() {
-
-            @Override
-            public void done(List<NCMBObject> results, NCMBException e) {
-                NCMBObject obj = new NCMBObject("DrawingClass");
-                if (e != null) {
-                    //検索失敗時の処理
-                } else {
-                    //検索成功時の処理
-                    try {
-                        NCMBObject data = results.get(0);
-                        String mObjectId = data.getString("objectId");
-                        String mState =  data.getString("state");
-                        obj.increment("state",0);
-                        Log.e("エラー","検索成功" + mObjectId + mState);
-                    } catch (NCMBException e1) {
-                        Log.e("エラー","検索失敗");
-                    }
-                }
-                mUtils.progressDismiss();
-            }
-        });
-        sync();
-    }
-
-    /**
-     * redo
-     */
-    public void redo() {
-        NCMBQuery<NCMBObject> query = new NCMBQuery<>("DrawingClass");
-        //データを昇順で取得するためのフィールドを設定
-        //query.addOrderByAscending("objectId");
-        //状態が0
-        query.whereEqualTo("state",0);
-        //データを降順で取得するためのフィールドを設定
-        query.addOrderByDescending("state");
-
-        query.findInBackground(new FindCallback<NCMBObject>() {
-            NCMBObject obj = new NCMBObject("DrawingClass");
-            @Override
-            public void done(List<NCMBObject> results, NCMBException e) {
-                if (e != null) {
-                    //検索失敗時の処理
-                } else {
-                    //検索成功時の処理
-                    try {
-                        obj.increment("state", 1);
-                    } catch (NCMBException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-                mUtils.progressDismiss();
-            }
-        });
-        //getDrawing();
-    }
-
 
     /**
      * 消しゴム（OekakiActivityから呼び出し用）
      */
     public void setToolEraser() {
         mTool_category = TOOL_ERASER;
-
         mPaint = new Paint();
         mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         mPaint.setARGB(0, 0, 0, 0);
@@ -442,7 +412,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      */
     public void setToolPen() {
         mTool_category = TOOL_PEN;
-
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setStrokeWidth(mFontSize);
@@ -450,17 +419,12 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
     }
-
-
-
     /**
      * 描画データを全て削除して同期する
      */
     public void deleteAll() {
         mHandler = new Handler();
-
         mUtils.progressShow("通信中", "削除リクエストを送信中です");
-
         final NCMBObject obj = new NCMBObject("DrawingClass");
         NCMBQuery<NCMBObject> query = new NCMBQuery<>("DrawingClass");
         query.findInBackground(new FindCallback<NCMBObject>() {
@@ -476,7 +440,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                             @Override
                             public void done(NCMBException e) {
                                 if (e != null) {
-                                    Log.d(TAG, "ObjectId:" + result.getObjectId() + "の削除リクエストを送りました");
                                 }
                             }
                         });
@@ -501,7 +464,18 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        sync();
+                        mCanvas = null;
+                        // ロックしてキャンバスを取得します。
+                        mCanvas = mHolder.lockCanvas();
+                        // キャンバスをクリアします。
+                        init();
+                        mCanvas.scale(scale, scale);
+                        mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                        //mCanvas.drawBitmap(reBmp,0,0,null);
+                        // ロックを外します。
+                        mHolder.unlockCanvasAndPost(mCanvas);
+                        getDrawing();
+//                        sync();
                     }
                 });
             }
