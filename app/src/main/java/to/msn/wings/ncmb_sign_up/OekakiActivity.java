@@ -49,7 +49,7 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //選択された時
                 ListItem item = (ListItem) parent.getSelectedItem();
-                mDrawSurfaceView.setFontSize(Float.valueOf(item.key));
+                mDrawSurfaceView.setDrawFontSize(Float.valueOf(item.key));
             }
 
             @Override
@@ -73,7 +73,7 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //選択された時
                 ListItem item = (ListItem) parent.getSelectedItem();
-                mDrawSurfaceView.setFontColor(item.key);
+                mDrawSurfaceView.setDrawFontColor(item.key);
             }
 
             @Override
