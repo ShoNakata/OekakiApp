@@ -1,6 +1,5 @@
-package to.msn.wings.ncmb_sign_up;
+package to.msn.wings.oekakiapp;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,25 +7,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.nifty.cloud.mb.LogInCallback;
-import com.nifty.cloud.mb.core.DoneCallback;
 import com.nifty.cloud.mb.core.LoginCallback;
 import com.nifty.cloud.mb.core.NCMB;
 import com.nifty.cloud.mb.core.NCMBException;
 import com.nifty.cloud.mb.core.NCMBUser;
 
 /**
- * Created by 4163103 on 2017/10/16.
+ * Created by 4163103 on 2017/11/05.
  */
+
 
 public class Login_Home_Activity extends AppCompatActivity {
 
     EditText mUserName;
     EditText mPassword;
-
-    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +32,17 @@ public class Login_Home_Activity extends AppCompatActivity {
 
         NCMB.initialize(getApplication(), "b18d561e7aa78c63abe4cd7a0bab2693b84cb975fe627e805281aaf9a2cfd82b", "80c9d743a613b53e9c09f104371d32cfdf7d79449ca1ed2b8b2e89dd31de5f72");
 
+
+
         mUserName = (EditText) findViewById(R.id.editText_login_username);
 
         mPassword = (EditText) findViewById(R.id.editText_login_password);
 
         final NCMBUser currentUser = NCMBUser.getCurrentUser();
+
+        String s = String.valueOf(currentUser.getUserName());
+        Log.d("", s);
+
 
         if (currentUser.getUserName() != null) {
 
@@ -62,28 +63,17 @@ public class Login_Home_Activity extends AppCompatActivity {
 
 
 
-        //ログインボタンpush
+        //入力してログインボタンpush
         Button btn_login = (Button)findViewById(R.id.button_login);
         btn_login.setOnClickListener(new View.OnClickListener() {
-
-
-
             @Override
             public void onClick(View view) {
 
-                progressDialog = new ProgressDialog(Login_Home_Activity.this);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.setMessage("ログイン中");
-                progressDialog.setCancelable(true);
-                progressDialog.show();
-
-                NCMBUser user = new NCMBUser();
+                final NCMBUser user = new NCMBUser();
 
                 user.setUserName(mUserName.getText().toString());
 
                 user.setPassword(mPassword.getText().toString());
-
-
 
 
 
@@ -100,10 +90,37 @@ public class Login_Home_Activity extends AppCompatActivity {
                                     // ログイン中のユーザーの取得に成功
                                     //Toast.makeText(getApplication(),  "ログイン中のユーザー:" + currentUser.getUserName(), Toast.LENGTH_SHORT).show();
 
+
+//                                    currentUser.getUserName();
+//                                    NCMBObject user_name = new NCMBObject("user");
+//                                    currentUser.setObjectId("objectId");
+
+
+
+//                                    NCMBObject object = new NCMBObject("user");
+//                                    object.setObjectId("objectId");
+//                                    object.fetchInBackground(new FetchCallback() {
+//                                        @Override
+//                                        public void done(NCMBBase ncmbBase, NCMBException e) {
+//
+//
+//                                            if (e != null) {
+//
+//                                            } else {
+//
+//
+//
+//                                            }
+//
+//
+//                                        }
+//                                    });
+
+
+
                                     Log.d("TAG", "1 " + currentUser.getUserName());
 
 
-                                    progressDialog.dismiss();
 
 
 
@@ -134,11 +151,9 @@ public class Login_Home_Activity extends AppCompatActivity {
                 }
 
             }
-
         });
 
     }
-
 
 
 }

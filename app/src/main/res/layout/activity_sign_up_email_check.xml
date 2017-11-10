@@ -4,6 +4,17 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/textView_ec_v"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:text="入力したメールアドレスにメールを送信しました。"
+        android:textAlignment="center"
+        android:textSize="30sp" />
+
+    <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -15,11 +26,23 @@
         android:textSize="36sp" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button_ec_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="68dp"
-        android:text="Button" />
+        android:text="メールアドレス登録したらタップ！"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView_ec_v2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView_ec_v"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        android:text="メールに記載されているURLを     タップしてメールアドレスの登録を完了してください。"
+        android:textAlignment="center"
+        android:textSize="24sp" />
 </RelativeLayout>
