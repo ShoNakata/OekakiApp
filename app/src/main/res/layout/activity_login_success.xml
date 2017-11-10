@@ -34,6 +34,6 @@
         android:layout_below="@+id/textview"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="34dp"
-        android:text="プロジェクト作成" />
+        android:text="HOMEへ" />
 
 </RelativeLayout>

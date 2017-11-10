@@ -1,6 +1,4 @@
-package to.msn.wings.ncmb_sign_up;
-
-import android.app.ProgressDialog;
+package to.msn.wings.oekakiapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,12 +13,10 @@ import com.nifty.cloud.mb.core.NCMBQuery;
 import com.nifty.cloud.mb.core.NCMBUser;
 
 /**
- * Created by 4163103 on 2017/10/12.
+ * Created by 4163103 on 2017/11/05.
  */
 
 public class Sign_Up_Email_Check_Activity extends AppCompatActivity {
-
-    //private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +53,6 @@ public class Sign_Up_Email_Check_Activity extends AppCompatActivity {
                             Intent intent = new Intent(getApplication(), Login_Home_Activity.class);
                             startActivity(intent);
                         }
-
                     }
                 });
 
@@ -66,6 +61,5 @@ public class Sign_Up_Email_Check_Activity extends AppCompatActivity {
         });
 
     }
-
 
 }
