@@ -115,7 +115,7 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
 
                 break;
             case R.id.pinch:
-               // mCustomImageView.setTranslationZ(10);
+                // mCustomImageView.setTranslationZ(10);
                 break;
         }
     }
