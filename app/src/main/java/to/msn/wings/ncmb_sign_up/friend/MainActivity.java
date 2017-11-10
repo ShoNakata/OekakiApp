@@ -1,19 +1,17 @@
 package to.msn.wings.ncmb_sign_up.friend;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.ListView;
 
-import com.nifty.cloud.mb.core.DoneCallback;
 import com.nifty.cloud.mb.core.FetchCallback;
-import com.nifty.cloud.mb.core.NCMB;
 import com.nifty.cloud.mb.core.NCMBBase;
 import com.nifty.cloud.mb.core.NCMBException;
 import com.nifty.cloud.mb.core.NCMBObject;
@@ -22,11 +20,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import to.msn.wings.ncmb_sign_up.CustomImageView;
-import to.msn.wings.ncmb_sign_up.DrawSurfaceView;
 import to.msn.wings.ncmb_sign_up.R;
-import to.msn.wings.ncmb_sign_up.api.ApiDrawingConfig;
 
 /**
  * Created by 4163103 on 2017/10/20.
@@ -34,122 +30,107 @@ import to.msn.wings.ncmb_sign_up.api.ApiDrawingConfig;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText myId;
-    private EditText friendId;
-    private EditText remoId;
-    private ArrayList<String> friendList1;
-    String text;
+    ArrayList nameList;
+    ArrayList idList;
+    ArrayList friendList;
+    ListView listView;
+    String name;
+    String objectid;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NCMB.initialize(this.getApplicationContext(), ApiDrawingConfig.API_APP_KEY, ApiDrawingConfig.API_CLIENT_KEY); myId = (EditText) findViewById(R.id.myId);//オブジェクトID
-        friendId = (EditText) findViewById(R.id.friendId);//追加したいオブジェクトID
-        remoId = (EditText) findViewById(R.id.removeId);//削除したいオブジェクトID
-        friendList1 = new ArrayList();
+        nameList = new ArrayList();
+        idList = new ArrayList();
+        friendList = new ArrayList();
 
+
+        Intent intent = getIntent();
+        nameList = intent.getStringArrayListExtra("key1");
+        idList = intent.getStringArrayListExtra("key2");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.base);
+        listView = (ListView) findViewById(R.id.listView);
+
+        final HashMap<String,String> data = new HashMap<>();
+        for (int i = 0; i < nameList.size(); i++){
+            data.put(nameList.get(i).toString(),idList.get(i).toString());
+        }
+
+        for (Object obj : nameList){
+            String str = obj.toString();
+            adapter.add(str);
+        }
+
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+                        name = nameList.get(position).toString();
+                        objectid = data.get(name);
+                        add();
+                        dialog();
+                        break;
+                    default:
+                        name = nameList.get(position).toString();
+                        objectid = data.get(name);
+                        add();
+                        dialog();
+                        break;
+                }
+            }
+        });
     }
 
-    public void onClick(View v) {
-        switch (v.getId()) {
-            //ID入力してfriendを取得
-            case R.id.btn1:
-                final NCMBObject friend1 = new NCMBObject("UserClass");
-                text = myId.getText().toString();
-                friend1.setObjectId(text);
-                friend1.fetchInBackground(new FetchCallback() {
-                    @Override
-                    public void done(NCMBBase ncmbBase, NCMBException e) {
-                        if (e != null) {
-                            Toast.makeText(MainActivity.this, "失敗", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
-                            JSONArray data = friend1.getJSONArray("friend");
-                            for (int i = 0; i < data.length(); i++) {
-                                try {
-                                    friendList1.add(data.getString(i).toString());
-                                } catch (JSONException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
+    public void dialog(){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("確認");
+        dialog.setMessage(name + "でよろしいですか？");
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //OK
+                Intent intent = new Intent(MainActivity.this,friendActivity.class);
+                intent.putStringArrayListExtra("key1",friendList);
+                intent.putExtra("key2",objectid);
+                startActivity(intent);
+            }
+        });
+        dialog.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //NG
+            }
+        });
+        dialog.create().show();
+    }
+
+    public void add(){
+        final NCMBObject object = new NCMBObject("UserClass");
+        object.setObjectId(objectid);
+        object.fetchInBackground(new FetchCallback() {
+            @Override
+            public void done(NCMBBase ncmbBase, NCMBException e) {
+                if (e != null){
+                    Log.i("Log","Main失敗");
+                } else {
+                    Log.i("Log","Main成功");
+                    JSONArray data = object.getJSONArray("friend");
+                    for (int i = 0; i < data.length(); i++) {
+                        try {
+                            friendList.add(data.getString(i).toString());
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
                         }
                     }
-                });
-                break;
-
-
-            //画面遷移して一覧表示
-            case R.id.btn2:
-                Intent intent = new Intent(MainActivity.this, ListActivity.class);
-                intent.putStringArrayListExtra("key", friendList1);
-                startActivity(intent);
-                break;
-
-
-            //friendにIDを追加
-            case R.id.btn3:
-                final NCMBObject friend2 = new NCMBObject("UserClass");
-                friend2.setObjectId(text);
-                String friendid = friendId.getText().toString();
-                JSONArray jsonArray = new JSONArray();
-                for (String friendId : friendList1) {
-                    jsonArray.put(friendId);
                 }
-                int id = friendList1.indexOf(friendid);
-
-                if (id != -1) {
-                    Toast.makeText(MainActivity.this, "既に登録されています。", Toast.LENGTH_SHORT).show();
-                } else {
-                    jsonArray.put(friendid);
-                    //TODO
-                    friend2.put("friend", jsonArray);
-                    friend2.saveInBackground(new DoneCallback() {
-                        @Override
-                        public void done(NCMBException e) {
-                            if (e != null) {
-                                Toast.makeText(MainActivity.this, "失敗", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                    friendList1.add(friendid);
-                }
-                break;
-
-
-            //friendからIDを削除
-            case R.id.btn4:
-                final NCMBObject friend3 = new NCMBObject("UserClass");
-                friend3.setObjectId(text);
-                String refriend = remoId.getText().toString();
-
-                JSONArray data = new JSONArray();
-                for (String friendId : friendList1) {
-                    data.put(friendId);
-                }
-
-                int id1 = friendList1.indexOf(refriend);
-                if (id1 != -1) {
-                    friendList1.remove(id1);
-                    friend3.put("friend", friendList1);
-                    friend3.saveInBackground(new DoneCallback() {
-                        @Override
-                        public void done(NCMBException e) {
-                            if (e != null) {
-                                Toast.makeText(MainActivity.this, "失敗", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                } else {
-                    Toast.makeText(MainActivity.this, "入力されたIDは存在しません。", Toast.LENGTH_SHORT).show();
-                }
-                break;
-
-        }
+            }
+        });
     }
 }
