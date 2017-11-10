@@ -1,6 +1,5 @@
 package to.msn.wings.ncmb_sign_up;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,10 +16,8 @@ import to.msn.wings.ncmb_sign_up.api.ApiDrawingConfig;
 public class OekakiActivity extends AppCompatActivity implements View.OnClickListener {
 
     DrawSurfaceView mDrawSurfaceView;
-    CustomImageView mCustomImageView;
     static FrameLayout linearLayout;
-    private DL_ListActivity dl_listActivity;
-    Bitmap bitmap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +28,8 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
 
         mDrawSurfaceView = new DrawSurfaceView(this);
 
-
-        bitmap = dl_listActivity.bitmap;
-
-        mCustomImageView = new CustomImageView(this);
-        mCustomImageView.setImageBitmap(bitmap);
-
-
         linearLayout = (FrameLayout) findViewById(R.id.frameLayout);
 
-        linearLayout.addView(mCustomImageView);
         linearLayout.addView(mDrawSurfaceView);
 
 
@@ -60,7 +49,7 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //選択された時
                 ListItem item = (ListItem) parent.getSelectedItem();
-                mDrawSurfaceView.setFontSize(Float.valueOf(item.key));
+                mDrawSurfaceView.setDrawFontSize(Float.valueOf(item.key));
             }
 
             @Override
@@ -84,7 +73,7 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //選択された時
                 ListItem item = (ListItem) parent.getSelectedItem();
-                mDrawSurfaceView.setFontColor(item.key);
+                mDrawSurfaceView.setDrawFontColor(item.key);
             }
 
             @Override
@@ -122,11 +111,11 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
 //                mDrawSurfaceView.redo();
 //                break;
             case R.id.draw:
-                mCustomImageView.setTranslationZ(0);
+                //mCustomImageView.setTranslationZ(0);
 
                 break;
             case R.id.pinch:
-                mCustomImageView.setTranslationZ(10);
+                // mCustomImageView.setTranslationZ(10);
                 break;
         }
     }
