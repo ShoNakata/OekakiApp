@@ -1,5 +1,6 @@
 package to.msn.wings.ncmb_sign_up;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +26,7 @@ public class Login_Home_Activity extends AppCompatActivity {
     EditText mUserName;
     EditText mPassword;
 
-
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +60,30 @@ public class Login_Home_Activity extends AppCompatActivity {
 
         }
 
+
+
+        //ログインボタンpush
         Button btn_login = (Button)findViewById(R.id.button_login);
         btn_login.setOnClickListener(new View.OnClickListener() {
+
+
+
             @Override
             public void onClick(View view) {
+
+                progressDialog = new ProgressDialog(Login_Home_Activity.this);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setMessage("ログイン中");
+                progressDialog.setCancelable(true);
+                progressDialog.show();
 
                 NCMBUser user = new NCMBUser();
 
                 user.setUserName(mUserName.getText().toString());
 
                 user.setPassword(mPassword.getText().toString());
+
+
 
 
 
@@ -88,6 +103,7 @@ public class Login_Home_Activity extends AppCompatActivity {
                                     Log.d("TAG", "1 " + currentUser.getUserName());
 
 
+                                    progressDialog.dismiss();
 
 
 
@@ -118,6 +134,7 @@ public class Login_Home_Activity extends AppCompatActivity {
                 }
 
             }
+
         });
 
     }

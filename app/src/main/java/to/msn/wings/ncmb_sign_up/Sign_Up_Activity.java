@@ -27,6 +27,9 @@ public class Sign_Up_Activity extends AppCompatActivity {
     private EditText mPassword;
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +58,8 @@ public class Sign_Up_Activity extends AppCompatActivity {
 
             }
         });
+
+
 
 
 

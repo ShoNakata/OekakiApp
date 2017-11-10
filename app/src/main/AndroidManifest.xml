@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="to.msn.wings.oekakiapp">
-
+    package="to.msn.wings.ncmb_sign_up">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -14,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SignUpActivity">
+        <activity android:name=".Sign_Up_Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,11 +21,25 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Home_Activity">
+        <activity
+            android:name=".Sign_Up_Email_Check_Activity"
+            android:label="@string/app_name">
 
         </activity>
 
-        <activity android:name=".Login_success_Activity">
+        <activity
+            android:name=".Login_Home_Activity"
+            android:label="@string/app_name">
+
+        </activity>
+
+        <activity
+            android:name=".Login_success_Activity"
+            android:label="@string/app_name">
+
+        </activity>
+
+        <activity android:name=".friend.MainActivity">
 
         </activity>
 
@@ -34,18 +47,11 @@
 
         </activity>
 
-
-        <activity android:name=".friend.MainActivity">
-
-        </activity>
-
-
-        <activity android:name=".Login_Home_Activity">
+        <activity android:name=".OekakiActivity">
 
         </activity>
 
-
-        <activity android:name=".Sign_Up_Email_Check_Activity">
+        <activity android:name=".Create_project_Acitviyt">
 
         </activity>
 
@@ -55,9 +61,14 @@
         </activity>
 
 
-        <activity android:name=".Create_project_Acitviyt">
+        <activity android:name=".Home_Activity">
 
         </activity>
+
+
+
+
+
 
 
     </application>

@@ -1,5 +1,6 @@
 package to.msn.wings.ncmb_sign_up;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ public class Login_success_Activity extends AppCompatActivity {
 
     TextView textView;
 
+    ProgressDialog progressDialog;
 
 
     @Override
@@ -41,13 +43,79 @@ public class Login_success_Activity extends AppCompatActivity {
 
         final NCMBUser currentUser = NCMBUser.getCurrentUser();
 
-        //プロジェクト作成ボタンpush
+//        //プロジェクト作成ボタンpush
+//        Button btn_new_project = (Button)findViewById(R.id.project_btn);
+//        btn_new_project.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                Intent intent = new Intent(getApplication(), MainActivity.class);
+//                startActivity(intent);
+//
+////                NCMBQuery<NCMBUser> query = new NCMBQuery<NCMBUser>("user");
+////
+////                query.findInBackground(new FindCallback<NCMBUser>() {
+////                    @Override
+////                    public void done(List<NCMBUser> list, NCMBException e) {
+////
+////
+////
+////                        //list.toString();
+////
+////                        Log.d("",list.toString());
+////                        Log.d("", String.valueOf(currentUser));
+////
+////
+////                    }
+////                });
+//
+//
+//
+//            }
+//        });
+//
+//
+//
+//        //おえかきボタンpush
+//        Button oekaki_btn = (Button)findViewById(R.id.oekakiBotton);
+//        oekaki_btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                Intent intent = new Intent(getApplication(), OekakiActivity.class);
+//                startActivity(intent);
+//
+//            }
+//        });
+//
+//
+//
+//        //ログアウトボタンpush
+//        Button btn_logout = (Button)findViewById(R.id.logout_button);
+//        btn_logout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                NCMBUser.logoutInBackground(new DoneCallback() {
+//                    @Override
+//                    public void done(NCMBException e) {
+//
+//                        //Toast.makeText(getApplication(),  "ログイン中のユーザー:" + currentUser.getUserName(), Toast.LENGTH_SHORT).show();
+//                        finish();
+//
+//                    }
+//                });
+//
+//            }
+//        });
+
+        //HOMEへボタンpush
         Button btn_new_project = (Button)findViewById(R.id.project_btn);
         btn_new_project.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(getApplication(), MainActivity.class);
+                Intent intent = new Intent(getApplication(), Home_Activity.class);
                 startActivity(intent);
 
 //                NCMBQuery<NCMBUser> query = new NCMBQuery<NCMBUser>("user");
@@ -83,10 +151,17 @@ public class Login_success_Activity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                progressDialog = new ProgressDialog(Login_success_Activity.this);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setMessage("ログアウト中");
+                progressDialog.setCancelable(true);
+                progressDialog.show();
+
                 NCMBUser.logoutInBackground(new DoneCallback() {
                     @Override
                     public void done(NCMBException e) {
 
+                        progressDialog.dismiss();
                         //Toast.makeText(getApplication(),  "ログイン中のユーザー:" + currentUser.getUserName(), Toast.LENGTH_SHORT).show();
                         finish();
 
@@ -95,6 +170,7 @@ public class Login_success_Activity extends AppCompatActivity {
 
             }
         });
+
 
     }
 

@@ -17,14 +17,20 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:gravity="center"
-        android:visibility="visible" >
+        android:visibility="visible">
 
         <Button
             android:id="@+id/btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="戻る"
-            android:onClick="onClick"/>
+            android:onClick="onClick"
+            android:text="戻る" />
+
+        <Button
+            android:id="@+id/btn_next_oekaki"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="お絵描き" />
     </LinearLayout>
 
 </LinearLayout>
