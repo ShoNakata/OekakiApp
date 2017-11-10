@@ -453,9 +453,9 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             @Override
             public void done(List<NCMBObject> results, NCMBException e) {
                 if (e != null) {
-                //検索失敗時の処理
+                    //検索失敗時の処理
                 } else {
-                //検索成功時の処理
+                    //検索成功時の処理
                     for (final NCMBObject result : results) {
                         obj.setObjectId(result.getObjectId());
                         obj.deleteObjectInBackground(new DoneCallback() {
@@ -475,7 +475,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         new Thread(new Runnable() {
             @Override
             public void run() {
-        // DBが更新されるまで待機
+                // DBが更新されるまで待機
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {
