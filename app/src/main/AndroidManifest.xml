@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".OekakiActivity">
+        <activity android:name=".Sign_Up_Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,9 +47,24 @@
 
         </activity>
 
-        <!--<activity android:name=".OekakiActivity">-->
+        <activity android:name=".OekakiActivity">
 
-        <!--</activity>-->
+        </activity>
+
+        <activity android:name=".Create_project_Acitviyt">
+
+        </activity>
+
+
+        <activity android:name=".DL_ListActivity">
+
+        </activity>
+
+
+        <activity android:name=".Home_Activity">
+
+        </activity>
+
 
 
 
