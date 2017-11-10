@@ -43,7 +43,7 @@
 
         </activity>
 
-        <activity android:name=".friend.ListActivity">
+        <activity android:name=".friend.friendActivity">
 
         </activity>
 
@@ -64,6 +64,10 @@
         <activity android:name=".Home_Activity">
 
         </activity>
+
+        <activity android:name=".friend.homeActivity"/>
+        <activity android:name=".friend.searchActivity"/>
+        <activity android:name=".friend.search_hit_Activity"/>
 
 
 
