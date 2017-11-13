@@ -4,21 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.nifty.cloud.mb.core.DoneCallback;
-import com.nifty.cloud.mb.core.FindCallback;
 import com.nifty.cloud.mb.core.NCMB;
 import com.nifty.cloud.mb.core.NCMBException;
-import com.nifty.cloud.mb.core.NCMBQuery;
 import com.nifty.cloud.mb.core.NCMBUser;
-
-import java.util.List;
-
-import to.msn.wings.ncmb_sign_up.friend.MainActivity;
 
 /**
  * Created by 4163103 on 2017/10/18.
@@ -136,20 +129,6 @@ public class Login_success_Activity extends AppCompatActivity {
 //                });
 
 
-
-            }
-        });
-
-
-
-        //おえかきボタンpush
-        Button oekaki_btn = (Button)findViewById(R.id.oekakiBotton);
-        oekaki_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent intent = new Intent(getApplication(), OekakiActivity.class);
-                startActivity(intent);
 
             }
         });

@@ -27,7 +27,7 @@ public class DL_ListActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
 
-    static Bitmap bitmap;
+    Bitmap bitmap;
 
 
     @Override
@@ -133,8 +133,8 @@ public class DL_ListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Intent intent1 = new Intent(getApplication(), OekakiActivity.class);
-                startActivity(intent1);
+                Intent intent = new Intent(DL_ListActivity.this, OekakiActivity.class);
+                startActivity(intent);
 
             }
         });

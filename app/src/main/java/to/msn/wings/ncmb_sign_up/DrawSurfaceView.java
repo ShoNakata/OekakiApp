@@ -66,6 +66,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private float mScale = 0.5f; // 描画する倍率
     private ScaleGestureDetector mScaleDetector;
+    int src_width;
+    int src_height;
 
 
     Resources res = this.getContext().getResources();
@@ -118,6 +120,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * 初期化処理
      */
     private void init() {
+        src_width = bmp.getWidth();
+        src_height = bmp.getHeight();
         mHolder = getHolder();
 
         // 透過します。
@@ -150,8 +154,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
                                int height) {
-        int src_width = bmp.getWidth();
-        int src_height = bmp.getHeight();
         float xScale = (float) width / mCanvasScale / src_width;
         float yScale = (float) height / mCanvasScale / src_height;
         if (xScale < yScale) {
@@ -287,16 +289,24 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         // サーバの描画データを取得する
         NCMBQuery<NCMBObject> query = new NCMBQuery<>("DrawingClass");
+        try {
+            Log.i("カウント",""+query.count());
+        } catch (NCMBException e) {
+            e.printStackTrace();
+        }
+
+        query.setLimit(500);
         query.findInBackground(new FindCallback<NCMBObject>() {
             @Override
             public void done(List<NCMBObject> results, NCMBException e) {
                 if (e != null) {
-                    Log.e(TAG, "sendDrawing：保存失敗");
+                    Log.e(TAG, "getRemoteData：保存失敗");
                 } else {
-                    Log.i(TAG, "sendDrawing：保存成功");
+                    Log.i(TAG, "getRemoteData：保存成功");
 
                     NCMBObject data;
                     int resultsSize = results.size();
+                    Log.i("---------------",""+resultsSize);
                     for (int i = 0; i < resultsSize; i++) {
                         // 取得した描画データをキャンバスに描画する
                         data = results.get(i);
@@ -449,6 +459,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         final NCMBObject obj = new NCMBObject("DrawingClass");
         NCMBQuery<NCMBObject> query = new NCMBQuery<>("DrawingClass");
+        query.setLimit(0);
         query.findInBackground(new FindCallback<NCMBObject>() {
             @Override
             public void done(List<NCMBObject> results, NCMBException e) {
@@ -456,6 +467,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     //検索失敗時の処理
                 } else {
                     //検索成功時の処理
+                    Log.i("^^^^^^^^^^^^",""+results);
                     for (final NCMBObject result : results) {
                         obj.setObjectId(result.getObjectId());
                         obj.deleteObjectInBackground(new DoneCallback() {

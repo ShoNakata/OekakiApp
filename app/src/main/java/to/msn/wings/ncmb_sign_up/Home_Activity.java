@@ -10,7 +10,7 @@ import android.widget.Button;
 import com.nifty.cloud.mb.core.NCMB;
 import com.nifty.cloud.mb.core.NCMBUser;
 
-import to.msn.wings.ncmb_sign_up.friend.MainActivity;
+import to.msn.wings.ncmb_sign_up.friend.homeActivity;
 
 /**
  * Created by 4163103 on 2017/11/07.
@@ -34,7 +34,7 @@ public class Home_Activity extends AppCompatActivity {
         fbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplication(), MainActivity.class);
+                Intent intent = new Intent(getApplication(), homeActivity.class);
                 startActivity(intent);
             }
         });
