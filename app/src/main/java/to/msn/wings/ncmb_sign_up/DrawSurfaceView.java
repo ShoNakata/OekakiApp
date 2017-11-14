@@ -459,7 +459,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         final NCMBObject obj = new NCMBObject("DrawingClass");
         NCMBQuery<NCMBObject> query = new NCMBQuery<>("DrawingClass");
-        query.setLimit(0);
+        query.setLimit(500);
         query.findInBackground(new FindCallback<NCMBObject>() {
             @Override
             public void done(List<NCMBObject> results, NCMBException e) {
