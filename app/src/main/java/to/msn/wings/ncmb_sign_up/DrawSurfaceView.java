@@ -288,21 +288,20 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mUtils.progressShow("通信中", "描画データを読み込み中です");
 
         // サーバの描画データを取得する
-        NCMBQuery<NCMBObject> query = new NCMBQuery<>("DrawingClass");
+        final NCMBQuery<NCMBObject> query = new NCMBQuery<>("DrawingClass");
         try {
             Log.i("カウント",""+query.count());
         } catch (NCMBException e) {
             e.printStackTrace();
         }
-
-        query.setLimit(500);
+        query.setLimit(10);
         query.findInBackground(new FindCallback<NCMBObject>() {
             @Override
             public void done(List<NCMBObject> results, NCMBException e) {
                 if (e != null) {
-                    Log.e(TAG, "getRemoteData：保存失敗");
+                    Log.e(TAG, "getRemoteData：取得失敗");
                 } else {
-                    Log.i(TAG, "getRemoteData：保存成功");
+                    Log.i(TAG, "getRemoteData：取得成功");
 
                     NCMBObject data;
                     int resultsSize = results.size();
@@ -312,10 +311,12 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         data = results.get(i);
                         drawRemoteData(data.getInt("toolCategory"), data.getString("fontColor"), data.getInt("fontSize"), data.getJSONArray("path"), data.getInt("state"));
                     }
-                    mUtils.progressDismiss();
+                    query.setSkip(10);
+                    getRemoteData();
                 }
             }
         });
+        mUtils.progressDismiss();
     }
 
     /**
