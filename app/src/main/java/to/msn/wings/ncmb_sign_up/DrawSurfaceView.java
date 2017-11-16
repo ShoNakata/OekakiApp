@@ -311,8 +311,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         data = results.get(i);
                         drawRemoteData(data.getInt("toolCategory"), data.getString("fontColor"), data.getInt("fontSize"), data.getJSONArray("path"), data.getInt("state"));
                     }
-                    query.setSkip(10);
-                    getRemoteData();
+
                 }
             }
         });

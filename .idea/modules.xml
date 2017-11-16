@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NCMB_Sign_Up.iml" filepath="$PROJECT_DIR$/NCMB_Sign_Up.iml" />
+      <module fileurl="file://C:\Users\4163101\Documents\OekakiApp\NCMB_Sign_Up.iml" filepath="C:\Users\4163101\Documents\OekakiApp\NCMB_Sign_Up.iml" />
       <module fileurl="file://$PROJECT_DIR$/OekakiApp.iml" filepath="$PROJECT_DIR$/OekakiApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
