@@ -111,11 +111,11 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
 //                mDrawSurfaceView.redo();
 //                break;
             case R.id.draw:
-                //mCustomImageView.setTranslationZ(0);
+                mDrawSurfaceView.setTest(1);
 
                 break;
             case R.id.pinch:
-                // mCustomImageView.setTranslationZ(10);
+                mDrawSurfaceView.setTest(0);
                 break;
         }
     }
