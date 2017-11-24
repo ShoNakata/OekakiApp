@@ -37,11 +37,11 @@ public class OekakiActivity extends AppCompatActivity implements View.OnClickLis
         ArrayAdapter<ListItem> fontSizeAdapter
                 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
         fontSizeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        fontSizeAdapter.add(new ListItem("10", "10sp"));
         fontSizeAdapter.add(new ListItem("20", "20sp"));
+        fontSizeAdapter.add(new ListItem("30", "30sp"));
         fontSizeAdapter.add(new ListItem("40", "40sp"));
-        fontSizeAdapter.add(new ListItem("60", "60sp"));
-        fontSizeAdapter.add(new ListItem("80", "80sp"));
-        fontSizeAdapter.add(new ListItem("100", "100sp"));
+        fontSizeAdapter.add(new ListItem("50", "50sp"));
 
         Spinner spFontSize = (Spinner) findViewById(R.id.spFontSize);
         spFontSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

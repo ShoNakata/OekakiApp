@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.ImageView;
 
 import com.nifty.cloud.mb.core.DoneCallback;
 import com.nifty.cloud.mb.core.FindCallback;
@@ -64,20 +65,36 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Paint mDrawPaint;
     private Path mDrawPath;
 
-    private float mScale = 0.5f; // 描画する倍率
-    private ScaleGestureDetector mScaleDetector;
     int src_width;
     int src_height;
     private static  int test = 0;
 
-    private float SCALE_MAX = 3.0f;
-    private float SCALE_MIN = 0.5f;
 
+    private float mScale = 1.0f;
+    private ScaleGestureDetector mScaleGestureDetector;
 
     Resources res = this.getContext().getResources();
     Bitmap bmp = BitmapFactory.decodeResource(res, R.drawable.tech_pjin_icon);
     Bitmap reBmp;
 
+    private ScaleGestureDetector.SimpleOnScaleGestureListener mOnScaleListener
+            = new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            return super.onScaleBegin(detector);
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            super.onScaleEnd(detector);
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            mScale *= detector.getScaleFactor();
+            return true;
+        };
+    };
 
     /**
      * コンストラクター
@@ -89,39 +106,9 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mUtils = new Utils(context);
         // 描画データの初期化
         init();
+        mScaleGestureDetector = new ScaleGestureDetector(context, mOnScaleListener);
         getRemoteData();
-        mScaleDetector = new ScaleGestureDetector(context,
-                new ScaleGestureDetector.OnScaleGestureListener() {
-                    @Override
-                    public boolean onScale(ScaleGestureDetector detector) {
-                        // ピンチイン・アウト中に継続して呼び出される
-                        // getScaleFactor()は
-                        // 『今回の2点タッチの距離/前回の2点タッチの距離』を返す
-                        // 表示倍率の計算
-                         mScale *= detector.getScaleFactor();
-                        if (mScale < 0.5f) {
-                            mScale = 0.5f;
-                            return false;
-                        }
 
-                        if (mScale > 10f) {
-                            mScale = 10f;
-                            return false;
-                        }
-                        setCanvasScaleScroll();
-                        invalidate();
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onScaleBegin(ScaleGestureDetector detector) {
-                        return true;
-                    }
-
-                    @Override
-                    public void onScaleEnd(ScaleGestureDetector detector) {
-                    }
-                });
     }
 
     /**
@@ -156,6 +143,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
                                int height) {
 
+
         float xScale = (float) width / mCanvasScale/ src_width;
         float yScale = (float) height / mCanvasScale/ src_height;
         if (xScale < yScale) {
@@ -169,7 +157,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Matrix matrix = new Matrix();
         matrix.postScale(xScale, yScale);
         reBmp = Bitmap.createBitmap(bmp, 0, 0, src_width, src_height, matrix, true);
-        setBitmap(mLastDrawCanvas,reBmp);
+        setCenter(mLastDrawCanvas,reBmp);
     }
 
     @Override
@@ -191,7 +179,9 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (test == 1) {
+
+        mScaleGestureDetector.onTouchEvent(event);
+
             // タッチ座標をCanvasに設定したScaleに合わせて修正する
             float touchedX = event.getX() / mCanvasScale+mScale;
             float touchedY = event.getY() / mCanvasScale+mScale;
@@ -236,11 +226,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 default:
                     break;
             }
-        }else if (test == 0){
-            mScaleDetector.onTouchEvent(event);
-        }
 
-        return mScaleDetector.onTouchEvent(event);
+        return true;
     }
 
 
@@ -381,14 +368,15 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // ロックしてキャンバスを取得します。
         Canvas canvas = mHolder.lockCanvas();
         //比率に応じてキャンパスサイズを指定
-        canvas.scale(mCanvasScale+(mScale), mCanvasScale+(mScale));
+        canvas.scale(mCanvasScale * mScale, mCanvasScale * mScale);
         // キャンバスをクリアします。
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        // 前回描画したビットマップをキャンバスに描画します。
 
-        setBitmap(canvas,reBmp);
-
+        //setBitmap(canvas,reBmp);
+        setCenter(canvas,reBmp);
         setBitmap(canvas,mLastDrawBitmap);
+        //setCenter(mLastDrawCanvas);
+
         // パスを描画します。
         if (path != null && paint != null) canvas.drawPath(path, paint);
         // ロックを外します。
@@ -407,7 +395,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mLastDrawBitmap = null;
         mLastDrawCanvas = null;
         clearLastDrawBitmap();
-        canvas.scale(mCanvasScale+(mScale), mCanvasScale+(mScale));
+        canvas.scale(mCanvasScale, mCanvasScale);
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 
         mHolder.unlockCanvasAndPost(canvas);
@@ -512,19 +500,23 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mycanvas.drawBitmap(bmp,0,0,null);
     }
 
-    public void setCanvasScaleScroll(){
-        // ロックしてキャンバスを取得します。
-        Canvas canvas = mHolder.lockCanvas();
-        //比率に応じてキャンパスサイズを指定
-        canvas.scale(mCanvasScale+(mScale), mCanvasScale+(mScale));
-        // キャンバスをクリアします。
-        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        // 前回描画したビットマップをキャンバスに描画します。
-        setBitmap(canvas,reBmp);
-        setBitmap(canvas,mLastDrawBitmap);
-        // ロックを外します。
-        mHolder.unlockCanvasAndPost(canvas);
+    /**
+     * 画像を
+     * @param mycanvas
+     */
+    private void setCenter(Canvas mycanvas,Bitmap bmp){
+        Matrix matrix = new Matrix();
+
+        float mTranslateX;
+        float mTranslateY;
+        matrix.reset();
+        mTranslateX = mLastDrawCanvas.getWidth()/mCanvasScale/2;
+        mTranslateY = mLastDrawCanvas.getHeight()/mCanvasScale/2;
+        matrix.postTranslate(-bmp.getWidth()/2, -bmp.getHeight()/2);
+        matrix.postTranslate(mTranslateX, mTranslateY);
+        mycanvas.drawBitmap(bmp, matrix, null);
     }
+
 
     public void setTest(int pinch){
         test = pinch;

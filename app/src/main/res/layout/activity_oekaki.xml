@@ -86,6 +86,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="onClick"
+            android:background="@android:drawable/ic_menu_zoom"
             android:text="zoom" />
 
         <Button
