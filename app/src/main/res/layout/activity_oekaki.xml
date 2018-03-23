@@ -81,31 +81,6 @@
             <!--android:text="REDO" />-->
 
         <Button
-            android:id="@+id/zoom"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onClick"
-            android:background="@android:drawable/ic_menu_zoom"
-            android:text="zoom" />
-
-        <Button
-        android:id="@+id/pinch"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:onClick="onClick"
-        android:text="pinch" />
-
-        <Button
-        android:id="@+id/draw"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:onClick="onClick"
-        android:text="draw" />
-
-        <Button
             android:id="@+id/btnSync"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -136,6 +111,13 @@
             android:layout_weight="1"
             android:onClick="onClick"
             android:text="ペン"/>
+
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnIdo"
+        android:layout_width="400dp"
+        android:layout_height="60dp"
+        android:onClick="onClick"
+        android:text="イド" />
 </LinearLayout>

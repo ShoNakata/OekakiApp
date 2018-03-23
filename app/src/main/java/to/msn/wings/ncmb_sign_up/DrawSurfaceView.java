@@ -71,7 +71,18 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
 
     private float mScale = 1.0f;
+    private float mScaleMin = 1.0f;
+    private float mScaleMax = 8.0f;
     private ScaleGestureDetector mScaleGestureDetector;
+
+    private TranslationGestureDetector mTranslationGestureDetector;
+    private float mPrevX, mPrevY;
+
+    Matrix canvasMatrix = new Matrix();
+    Matrix bmpMatrix = new Matrix();
+
+    private float plusX,plusY;
+
 
     Resources res = this.getContext().getResources();
     Bitmap bmp = BitmapFactory.decodeResource(res, R.drawable.tech_pjin_icon);
@@ -89,12 +100,48 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             super.onScaleEnd(detector);
         }
 
+
+        //TODO はやい速度でやるとだめ
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
+            if (mScale < mScaleMin){
+                mScale = mScaleMin;
+                return false;
+            }
+            if (mScale > mScaleMax){
+                mScale = mScaleMax;
+                return false;
+            }
             mScale *= detector.getScaleFactor();
             return true;
         };
     };
+
+
+    private TranslationGestureListener mTranslationListener
+            = new TranslationGestureListener() {
+        @Override
+        public void onTranslationEnd(TranslationGestureDetector detector) {
+        }
+
+        @Override
+        public void onTranslationBegin(TranslationGestureDetector detector) {
+            mPrevX = detector.getX();
+            mPrevY = detector.getY();
+        }
+
+        @Override
+        public void onTranslation(TranslationGestureDetector detector) {
+            float deltaX = detector.getX() - mPrevX;
+            float deltaY = detector.getY() - mPrevY;
+            plusX += deltaX;
+            plusY += deltaY;
+            mPrevX = detector.getX();
+            mPrevY = detector.getY();
+
+        }
+    };
+
 
     /**
      * コンストラクター
@@ -107,6 +154,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // 描画データの初期化
         init();
         mScaleGestureDetector = new ScaleGestureDetector(context, mOnScaleListener);
+        mTranslationGestureDetector = new TranslationGestureDetector(mTranslationListener);
         getRemoteData();
 
     }
@@ -157,7 +205,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Matrix matrix = new Matrix();
         matrix.postScale(xScale, yScale);
         reBmp = Bitmap.createBitmap(bmp, 0, 0, src_width, src_height, matrix, true);
-        setCenter(mLastDrawCanvas,reBmp);
     }
 
     @Override
@@ -181,10 +228,12 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public boolean onTouchEvent(MotionEvent event) {
 
         mScaleGestureDetector.onTouchEvent(event);
+        mTranslationGestureDetector.onTouch(event);
 
-            // タッチ座標をCanvasに設定したScaleに合わせて修正する
-            float touchedX = event.getX() / mCanvasScale+mScale;
-            float touchedY = event.getY() / mCanvasScale+mScale;
+
+        // タッチ座標をCanvasに設定したScaleに合わせて修正する
+            float touchedX = event.getX() / (mCanvasScale+(mScale-1));
+            float touchedY = event.getY() / (mCanvasScale+(mScale-1));
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -289,10 +338,15 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 } else {
                     NCMBObject data;
                     int resultsSize = results.size();
-                    for (int i = 0; i < resultsSize; i++) {
-                        // 取得した描画データをキャンバスに描画する
-                        data = results.get(i);
-                        drawRemoteData(data.getInt("toolCategory"), data.getString("fontColor"), data.getInt("fontSize"), data.getJSONArray("path"), data.getInt("state"));
+                    if (resultsSize == 0){
+                        drawLine(null,null);
+
+                    }else {
+                        for (int i = 0; i < resultsSize; i++) {
+                            // 取得した描画データをキャンバスに描画する
+                            data = results.get(i);
+                            drawRemoteData(data.getInt("toolCategory"), data.getString("fontColor"), data.getInt("fontSize"), data.getJSONArray("path"), data.getInt("state"));
+                        }
                     }
 
                 }
@@ -368,15 +422,11 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // ロックしてキャンバスを取得します。
         Canvas canvas = mHolder.lockCanvas();
         //比率に応じてキャンパスサイズを指定
-        canvas.scale(mCanvasScale * mScale, mCanvasScale * mScale);
+        canvas.scale(mCanvasScale+(mScale-1), mCanvasScale+(mScale-1));
         // キャンバスをクリアします。
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
-        //setBitmap(canvas,reBmp);
         setCenter(canvas,reBmp);
         setBitmap(canvas,mLastDrawBitmap);
-        //setCenter(mLastDrawCanvas);
-
         // パスを描画します。
         if (path != null && paint != null) canvas.drawPath(path, paint);
         // ロックを外します。
@@ -395,7 +445,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mLastDrawBitmap = null;
         mLastDrawCanvas = null;
         clearLastDrawBitmap();
-        canvas.scale(mCanvasScale, mCanvasScale);
+        canvas.scale(mCanvasScale+(mScale-1), mCanvasScale+(mScale-1));
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 
         mHolder.unlockCanvasAndPost(canvas);
@@ -496,31 +546,46 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mDrawPaint.setColor(Color.parseColor(drawFontColor));
     }
 
-    public void setBitmap(Canvas mycanvas,Bitmap bmp){
-        mycanvas.drawBitmap(bmp,0,0,null);
+    public void setBitmap(Canvas mycanvas,Bitmap bmpClone){
+        mycanvas.drawBitmap(bmpClone,0,0,null);
     }
 
     /**
-     * 画像を
+     *
      * @param mycanvas
+     * @param bmpClone
      */
-    private void setCenter(Canvas mycanvas,Bitmap bmp){
-        Matrix matrix = new Matrix();
+    private void setCenter(Canvas mycanvas,Bitmap bmpClone){
+        bmpMatrix.reset();
+        canvasMatrix.reset();
+        float x = mLastDrawCanvas.getWidth()/(mCanvasScale)/2;
+        float y = mLastDrawCanvas.getHeight()/(mCanvasScale)/2;
+        bmpMatrix.postTranslate(-bmpClone.getWidth() / 2, -bmpClone.getHeight() / 2);
+        bmpMatrix.postTranslate(x, y);
+        mycanvas.drawBitmap(bmpClone, bmpMatrix, null);
 
-        float mTranslateX;
-        float mTranslateY;
-        matrix.reset();
-        mTranslateX = mLastDrawCanvas.getWidth()/mCanvasScale/2;
-        mTranslateY = mLastDrawCanvas.getHeight()/mCanvasScale/2;
-        matrix.postTranslate(-bmp.getWidth()/2, -bmp.getHeight()/2);
-        matrix.postTranslate(mTranslateX, mTranslateY);
-        mycanvas.drawBitmap(bmp, matrix, null);
     }
+    public void setIdo(){
 
+        canvasMatrix.postTranslate(200,0);
+        bmpMatrix.postTranslate(200, 0);
+        // ロックしてキャンバスを取得します。
+        Canvas canvas = mHolder.lockCanvas();
+        //比率に応じてキャンパスサイズを指定
+        canvas.scale(mCanvasScale+(mScale-1), mCanvasScale+(mScale-1));
+        // キャンバスをクリアします。
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        canvas.drawBitmap(reBmp,bmpMatrix,null);
+        canvas.drawBitmap(mLastDrawBitmap,canvasMatrix,null);
+        // ロックを外します。
+        mHolder.unlockCanvasAndPost(canvas);
+
+    }
 
     public void setTest(int pinch){
         test = pinch;
     }
+
 
 }
 
